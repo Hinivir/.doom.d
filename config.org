@@ -6,6 +6,8 @@
 * TABLE OF CONTENTS :toc:
 - [[#about-this-config][ABOUT THIS CONFIG]]
 - [[#buffer][BUFFER]]
+  - [[#global-auto-revert][Global Auto Revert]]
+  - [[#keybindings-within-ibuffer-mode][Keybindings within ibuffer mode]]
 - [[#calendar][CALENDAR]]
 - [[#dired][DIRED]]
   - [[#keybindings-to-open-dired][Keybindings To Open Dired]]
@@ -14,15 +16,11 @@
   - [[#making-deleted-files-go-to-trash-can][Making deleted files go to trash can]]
 - [[#doom-theme][DOOM THEME]]
 - [[#elfeed][ELFEED]]
-- [[#emms][EMMS]]
 - [[#emojis][EMOJIS]]
 - [[#evaluate-elisp-expressions][EVALUATE ELISP EXPRESSIONS]]
 - [[#fonts][FONTS]]
 - [[#imenu][IMENU]]
 - [[#insert-date][INSERT DATE]]
-- [[#ivy][IVY]]
-  - [[#ivy-posframe][IVY-POSFRAME]]
-  - [[#ivy-keybindings][IVY KEYBINDINGS]]
 - [[#line-settings][LINE SETTINGS]]
 - [[#markdown][MARKDOWN]]
 - [[#modeline][MODELINE]]
@@ -33,7 +31,6 @@
   - [[#org-agenda][Org-agenda]]
   - [[#org-auto-tangle][Org-auto-tangle]]
 - [[#rainbow-mode][RAINBOW MODE]]
-
 
 * ABOUT THIS CONFIG
 This is my personal Doom Emacs config.  Doom Emacs is a distribution of Emacs that uses the "evil" keybindings (Vim keybindings) and includes a number of nice extensions and a bit of configuration out of the box.  I am maintaining this config not just for myself, but also for those that want to explore some of what is possible with Emacs.  I will add a lot of examples of plugins and settings, some of them I may not even use personally.  I do this because many people following me on YouTube look at my configs as "documentation".
@@ -243,7 +240,7 @@ Dired is the file manager within Emacs.  Below, I setup keybindings for image pr
   (kbd "; d") 'epa-dired-do-decrypt
   (kbd "; e") 'epa-dired-do-encrypt)
 ;; Get file icons in dired
-(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
+;;(add-hook 'dired-mode-hook 'all-the-icons-dired-mode)
 ;; With dired-open plugin, you can launch external programs for certain extensions
 ;; For example, I set all .png files to open in 'sxiv' and all .mp4 files to open in 'mpv'
 (setq dired-open-extensions '(("gif" . "sxiv")
@@ -308,35 +305,6 @@ An RSS newsfeed reader for Emacs.
                      ("https://www.reddit.com/r/emacs.rss" reddit emacs))))
 #+END_SRC
 
-* EMMS
-One of the media players available for Emacs is emms, which stands for Emacs Multimedia System.  By default, Doom Emacs does not use 'SPC a',' so the format I use for these bindings is 'SPC a' plus 'key'.
-
-| COMMAND               | DESCRIPTION                       | KEYBINDING |
-|-----------------------+-----------------------------------+------------|
-| emms-playlist-mode-go | /Switch to the playlist buffer/     | SPC a a    |
-| emms-pause            | /Pause the track/                   | SPC a x    |
-| emms-stop             | /Stop the track/                    | SPC a s    |
-| emms-previous         | /Play previous track in playlist/   | SPC a p    |
-| emms-next             | /Play next track in playlist/       | SPC a n    |
-
-#+BEGIN_SRC emacs-lisp
-(emms-all)
-(emms-default-players)
-(emms-mode-line 1)
-(emms-playing-time 1)
-(setq emms-source-file-default-directory "~/Music/"
-      emms-playlist-buffer-name "*Music*"
-      emms-info-asynchronously t
-      emms-source-file-directory-tree-function 'emms-source-file-directory-tree-find)
-(map! :leader
-      (:prefix ("a" . "EMMS audio player")
-       :desc "Go to emms playlist"      "a" #'emms-playlist-mode-go
-       :desc "Emms pause track"         "x" #'emms-pause
-       :desc "Emms stop track"          "s" #'emms-stop
-       :desc "Emms play previous track" "p" #'emms-previous
-       :desc "Emms play next track"     "n" #'emms-next))
-#+END_SRC
-
 * EMOJIS
 Emojify is an Emacs extension to display emojis. It can display github style emojis like :smile: or plain ascii ones like :).
 
@@ -375,9 +343,9 @@ Settings related to fonts within Doom Emacs:
 + 'font-lock-keyword-face' -- for keywords with special significance like 'setq' in elisp.
 
 #+BEGIN_SRC emacs-lisp
-(setq doom-font (font-spec :family "JetBrains Mono" :size 15)
+(setq doom-font (font-spec :family "MonaspiceNe Nerd Font" :size 15)
       doom-variable-pitch-font (font-spec :family "Ubuntu" :size 15)
-      doom-big-font (font-spec :family "JetBrains Mono" :size 24))
+      doom-big-font (font-spec :family "MonaspiceNe Nerd Font" :size 24))
 (after! doom-themes
   (setq doom-themes-enable-bold t
         doom-themes-enable-italic t))
@@ -437,55 +405,6 @@ Some custom functions to insert the date.  The function 'insert-todays-date' can
         :desc "Insert any date"    "a" #'hv/insert-any-date
         :desc "Insert todays date" "t" #'hv/insert-todays-date))
 #+end_src
-
-* IVY
-Ivy is a generic completion mechanism for Emacs.
-
-** IVY-POSFRAME
-Ivy-posframe is an ivy extension, which lets ivy use posframe to show its candidate menu.  Some of the settings below involve:
-+ ivy-posframe-display-functions-alist -- sets the display position for specific programs
-+ ivy-posframe-height-alist -- sets the height of the list displayed for specific programs
-
-Available functions (positions) for 'ivy-posframe-display-functions-alist'
-+ ivy-posframe-display-at-frame-center
-+ ivy-posframe-display-at-window-center
-+ ivy-posframe-display-at-frame-bottom-left
-+ ivy-posframe-display-at-window-bottom-left
-+ ivy-posframe-display-at-frame-bottom-window-center
-+ ivy-posframe-display-at-point
-+ ivy-posframe-display-at-frame-top-center
-
-=NOTE:= If the setting for 'ivy-posframe-display' is set to 'nil' (false), anything that is set to 'ivy-display-function-fallback' will just default to their normal position in Doom Emacs (usually a bottom split).  However, if this is set to 't' (true), then the fallback position will be centered in the window.
-
-#+BEGIN_SRC emacs-lisp
-(setq ivy-posframe-display-functions-alist
-      '((swiper                     . ivy-posframe-display-at-point)
-        (complete-symbol            . ivy-posframe-display-at-point)
-        (counsel-M-x                . ivy-display-function-fallback)
-        (counsel-esh-history        . ivy-posframe-display-at-window-center)
-        (counsel-describe-function  . ivy-display-function-fallback)
-        (counsel-describe-variable  . ivy-display-function-fallback)
-        (counsel-find-file          . ivy-display-function-fallback)
-        (counsel-recentf            . ivy-display-function-fallback)
-        (counsel-register           . ivy-posframe-display-at-frame-bottom-window-center)
-        (dmenu                      . ivy-posframe-display-at-frame-top-center)
-        (nil                        . ivy-posframe-display))
-      ivy-posframe-height-alist
-      '((swiper . 20)
-        (dmenu . 20)
-        (t . 10)))
-(ivy-posframe-mode 1) ; 1 enables posframe-mode, 0 disables it.
-#+END_SRC
-
-** IVY KEYBINDINGS
-By default, Doom Emacs does not use 'SPC v', so the format I use for these bindings is 'SPC v' plus 'key'.
-
-#+BEGIN_SRC emacs-lisp
-(map! :leader
-      (:prefix ("v" . "Ivy")
-       :desc "Ivy push view" "v p" #'ivy-push-view
-       :desc "Ivy switch view" "v s" #'ivy-switch-view))
-#+END_SRC
 
 * LINE SETTINGS
 I set comment-line to 'SPC TAB TAB' which is a rather comfortable keybinding for me on my ZSA Moonlander keyboard.  The standard Emacs keybinding for comment-line is 'C-x C-;'.  The other keybindings are for commands that toggle on/off various line-related settings.  Doom Emacs uses 'SPC t' for "toggle" commands, so I choose 'SPC t' plus 'key' for those bindings.
